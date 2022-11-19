@@ -10,9 +10,9 @@
 # app.handle("/", anemia.HTTP_GET, handler)
 
 import std/[asyncnet, asyncdispatch, strutils, tables]
-import reqres/request
+import reqres/[request, response]
 
-type HandlerType = proc(req: string, res: string): Future[system.void]{.closure.}
+type HandlerType = proc(req: HttpRequest, res: HttpResponse): Future[system.void]{.closure.}
 
 type Httphandler = ref object of RootObj
   path, httpMethod: string
@@ -38,6 +38,7 @@ method addHandler*(a: AnemiaApp, path: string, httpMethod: string, handle: Handl
 
 method processClientRequest*(a: AnemiaApp, client: AsyncSocket) {.async, base.} =
     var req: HttpRequest = newRequest()
+    var res: HttpResponse = newResponse(client)
     # get top head
     var lineBuffer: string
     lineBuffer = await client.recvLine()
@@ -59,15 +60,18 @@ method processClientRequest*(a: AnemiaApp, client: AsyncSocket) {.async, base.} 
     if bodyExist:
         lineBuffer = await client.recv(parseInt(bodyLength))
         req.setBodyContent(lineBuffer)
-    
-    echo "Request coming with ", req.getHttpMethod(), "method and body ", req.getContentBody()
 
+    echo "Request coming with ",  req.getHttpUri()," ", req.getHttpMethod(), " method and body ", req.getContentBody()
     # handle request now
-    for handler in a.handlers:
-      if handler.path == req.getHttpUri():
-        asyncCheck handler.handle()
+    var handlerExist: bool = false
 
-    await client.send("HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<p>hello anemian</p>\r\n")
+    for handler in a.handlers:
+      if handler.path == req.getHttpUri() and handler.httpMethod == req.getHttpMethod():
+        handlerExist = true
+        await handler.handle(req, res)
+    if not handlerExist:
+      await client.send("HTTP/1.1 405 Method Not Allowed\r\nContent-Type: text/html\r\n\r\n<p>Can't handle request</p>\r\n")
+
     client.close()
 
 method serve*(a: AnemiaApp) {.async, base.}=
@@ -96,15 +100,14 @@ method run*(a: AnemiaApp) {.base.} =
 
 let app: AnemiaApp = newAnemiaApp("127.0.0.1", "8888")
 
-proc helloWorld(req: string, res: string) {.async.} =
-  await sleepAsync(5000)
-  echo "Success"
+proc helloWorld(req: HttpRequest, res: HttpResponse) {.async.} =
+  await res.setStatusCode(200).setMessage("OK").sendResponse("Hello World Anemian")
+
 
 app.addHandler("/hello", "GET", helloWorld)
 
-proc songList(req: string, res: string) {.async.} =
-  await sleepAsync(1000)
-  echo "Success"
+proc songList(req: HttpRequest, res: HttpResponse) {.async.} =
+  await res.setStatusCode(200).setMessage("OK").sendResponse("Midnight Album")
 
 app.addHandler("/songs", "GET", songList)
 
