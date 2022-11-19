@@ -8,6 +8,24 @@
 
 > the entire code style is influenced by golang, 
 
+## Prototype
+```nim
+import asyncdispatch, base64
+import anemia/[anemia, request, response]
+
+let app: AnemiaApp = newAnemiaApp("127.0.0.1", "5000")
+
+# handler chalange republic of cloud engineering
+proc republicEngineering(req: HttpRequest, res: HttpResponse) {.async.} =
+    let base64Message: string = encode(req.getContentBody())
+    await res.setStatusCode(200).setMessage("OK").sendResponse(base64Message)
+
+app.addPostHandler("/", republicEngineering)
+
+app.run()
+runForever()
+```
+
 Todo 1 :
     
     Create a simple HTTP server which can process HTTP Get request and return arbitrary response. 
@@ -41,23 +59,7 @@ Todo 2 :
     If you have solution from first challenge, you may continue using that code. If not, you can create new code repository.
     do not steal any code from internet
 
-## Prototype
-```nim
-import asyncdispatch, base64
-import anemia/[anemia, request, response]
 
-let app: AnemiaApp = newAnemiaApp("127.0.0.1", "5000")
-
-# handler chalange republic of cloud engineering
-proc republicEngineering(req: HttpRequest, res: HttpResponse) {.async.} =
-    let base64Message: string = encode(req.getContentBody())
-    await res.setStatusCode(200).setMessage("OK").sendResponse(base64Message)
-
-app.addPostHandler("/", republicEngineering)
-
-app.run()
-runForever()
-```
 ## How to build and run
 - install nim 1.6.8 or aboce
 - install Make
