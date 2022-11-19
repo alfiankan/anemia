@@ -1,5 +1,8 @@
 # 🩸 Anemia HTTP [ON PROGRESS]
 ## A simple Nim HTTP library for your blood 🩸
+![Untitled Diagram drawio](https://user-images.githubusercontent.com/40946917/202859136-7e6b88a0-a1f2-4269-af2f-5ce1c99fc809.png)
+
+
 
 > Disclaimer, i'm not expertise yet in Nim but it is my first time trying to use Nim, and its fun. so sorry if my code was not expected as Nim expert, i just want achieve how http work actually
 
