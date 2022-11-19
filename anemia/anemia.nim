@@ -9,8 +9,8 @@
 
 # app.handle("/", anemia.HTTP_GET, handler)
 
-import std/[asyncnet, asyncdispatch, strutils, tables]
-import reqres/[request, response]
+import asyncnet, asyncdispatch, strutils
+import request, response
 
 type HandlerType = proc(req: HttpRequest, res: HttpResponse): Future[system.void]{.closure.}
 
@@ -29,10 +29,17 @@ proc newAnemiaApp(host: string, port: string): AnemiaApp =
   app.port = port
   return app 
 
-method addHandler*(a: AnemiaApp, path: string, httpMethod: string, handle: HandlerType) {.base.} =
+method addGetHandler*(a: AnemiaApp, path: string, handle: HandlerType) {.base.} =
   let handler = Httphandler()
   handler.path = path
-  handler.httpMethod = httpMethod
+  handler.httpMethod = "GET"
+  handler.handle = handle
+  a.handlers.add(handler)
+
+method addPostHandler*(a: AnemiaApp, path: string, handle: HandlerType) {.base.} =
+  let handler = Httphandler()
+  handler.path = path
+  handler.httpMethod = "POST"
   handler.handle = handle
   a.handlers.add(handler)
 
@@ -87,6 +94,7 @@ method serve*(a: AnemiaApp) {.async, base.}=
 method run*(a: AnemiaApp) {.base.} =
   asyncCheck a.serve()
 
+export newAnemiaApp
 
 
 
@@ -97,21 +105,19 @@ method run*(a: AnemiaApp) {.base.} =
 
 ## prototype simple application server
 
+# let app: AnemiaApp = newAnemiaApp("127.0.0.1", "8888")
 
-let app: AnemiaApp = newAnemiaApp("127.0.0.1", "8888")
-
-proc helloWorld(req: HttpRequest, res: HttpResponse) {.async.} =
-  await res.setStatusCode(200).setMessage("OK").sendResponse("Hello World Anemian")
+# proc helloWorld(req: HttpRequest, res: HttpResponse) {.async.} =
+#   await res.setStatusCode(200).setMessage("OK").sendResponse("Hello World Anemian")
 
 
-app.addHandler("/hello", "GET", helloWorld)
+# app.addHandler("/hello", "GET", helloWorld)
 
-proc songList(req: HttpRequest, res: HttpResponse) {.async.} =
-  await res.setStatusCode(200).setMessage("OK").sendResponse("Midnight Album")
+# proc songList(req: HttpRequest, res: HttpResponse) {.async.} =
+#   await res.setStatusCode(200).setMessage("OK").sendResponse("Midnight Album")
 
-app.addHandler("/songs", "GET", songList)
+# app.addHandler("/songs", "GET", songList)
 
-app.run()
-runForever()
-
+# app.run()
+# runForever()
 

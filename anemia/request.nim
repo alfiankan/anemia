@@ -1,9 +1,10 @@
 import std/[tables]
 
-type HttpRequest* = ref object of RootObj
-    httpMethod, httpUri : string
-    headers: Table[string, string]
-    body: string
+type 
+    HttpRequest* = ref object of RootObj
+        httpMethod, httpUri : string
+        headers: Table[string, string]
+        body: string
 
 proc newRequest(): HttpRequest =
     var request = HttpRequest()
