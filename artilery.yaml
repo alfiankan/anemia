@@ -1,0 +1,12 @@
+config:
+  target: "http://127.0.0.1:5000"
+  http:
+    timeout: 10
+  phases:
+    - duration: 5
+      arrivalRate: 1000
+scenarios:
+  - flow:
+      - post:
+          url: "/"
+          text: "this week is crazy"
