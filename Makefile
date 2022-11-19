@@ -1,4 +1,4 @@
-#!/bin/sh
-
 run:
-	nim c -r main.nim
+	nim c -r simple.nim
+build:
+	nim c -d:release simple.nim

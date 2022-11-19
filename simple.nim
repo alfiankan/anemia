@@ -1,7 +1,7 @@
 import asyncdispatch, base64
 import anemia/[anemia, request, response]
 
-let app: AnemiaApp = newAnemiaApp("127.0.0.1", "8888")
+let app: AnemiaApp = newAnemiaApp("127.0.0.1", "5000")
 
 # handler hello anemia user
 proc helloWorld(req: HttpRequest, res: HttpResponse) {.async.} =

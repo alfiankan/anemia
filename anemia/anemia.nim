@@ -68,7 +68,7 @@ method processClientRequest*(a: AnemiaApp, client: AsyncSocket) {.async, base.} 
         lineBuffer = await client.recv(parseInt(bodyLength))
         req.setBodyContent(lineBuffer)
 
-    echo "Request coming with ",  req.getHttpUri()," ", req.getHttpMethod(), " method and body ", req.getContentBody()
+    echo "Incoming: ", req.getHttpMethod(), " ", req.getHttpUri()
     # handle request now
     var handlerExist: bool = false
 
@@ -84,8 +84,10 @@ method processClientRequest*(a: AnemiaApp, client: AsyncSocket) {.async, base.} 
 method serve*(a: AnemiaApp) {.async, base.}=
   let socket = newAsyncSocket()
   socket.setSockOpt(OptReuseAddr, true)
-  socket.bindAddr(Port(8888))
+  socket.bindAddr(Port(parseInt(a.port)), a.host)
   socket.listen()
+  
+  echo "Anemia running on ", a.host, ":", a.port
 
   while true:
     let client = await socket.accept()
