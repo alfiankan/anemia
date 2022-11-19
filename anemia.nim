@@ -59,9 +59,13 @@ method processClientRequest*(a: AnemiaApp, client: AsyncSocket) {.async, base.} 
     if bodyExist:
         lineBuffer = await client.recv(parseInt(bodyLength))
         req.setBodyContent(lineBuffer)
-
     
     echo "Request coming with ", req.getHttpMethod(), "method and body ", req.getContentBody()
+
+    # handle request now
+    for handler in a.handlers:
+      if handler.path == req.getHttpUri():
+        asyncCheck handler.handle()
 
     await client.send("HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<p>hello anemian</p>\r\n")
     client.close()
@@ -78,6 +82,17 @@ method serve*(a: AnemiaApp) {.async, base.}=
 
 method run*(a: AnemiaApp) {.base.} =
   asyncCheck a.serve()
+
+
+
+
+
+
+
+
+
+## prototype simple application server
+
 
 let app: AnemiaApp = newAnemiaApp("127.0.0.1", "8888")
 

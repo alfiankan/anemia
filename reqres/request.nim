@@ -25,6 +25,9 @@ method setHttpMethod*(r: HttpRequest, incomingMethod: string) {.base.} =
 method setHttpUri*(r: HttpRequest, incomingHttpUri: string) {.base.} =
     r.httpUri = incomingHttpUri
 
+method getHttpUri*(r: HttpRequest): string {.base.} =
+    return r.httpUri
+
 method addHeader*(r: HttpRequest, name: string, value: string) {.base.} =
     r.headers[name] = ""
     r.headers[name].add(value)
