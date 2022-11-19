@@ -13,7 +13,7 @@ proc songList(req: HttpRequest, res: HttpResponse) {.async.} =
 
 # handler chalange republic of cloud engineering
 proc republicEngineering(req: HttpRequest, res: HttpResponse) {.async.} =
-    let base64Message: string = encode("this week is crazy")
+    let base64Message: string = encode(req.getContentBody())
     await res.setStatusCode(200).setMessage("OK").sendResponse(base64Message)
 
 app.addGetHandler("/hello", helloWorld)
